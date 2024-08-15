@@ -5,13 +5,14 @@ import { Box, IconButton } from "@mui/material";
 import { useMediaQuery } from "@mui/material";
 import SongsList from "./SongsList";
 import { MusicPlayer } from "./MusicPlayer";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
+import { clearSelectedSong } from "../reduxSlice/songsSlice";
 
 function SideBar({ children }) {
   const isXs = useMediaQuery("(max-width:600px)");
   const isSm = useMediaQuery("(min-width:600px) and (max-width:900px)");
-
+  const dispatch = useDispatch();
   const songs = useSelector((state) => state.songs.songs);
   const selectedSongIndex = useSelector(
     (state) => state.songs.selectedSongIndex
@@ -27,6 +28,7 @@ function SideBar({ children }) {
   }, [selectedSong]);
 
   const handleGoBack = () => {
+    dispatch(clearSelectedSong());
     setMainPage(true);
   };
   return (

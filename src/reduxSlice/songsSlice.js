@@ -13,6 +13,9 @@ const songsSlice = createSlice({
     selectSong: (state, action) => {
       state.selectedSongIndex = action.payload;
     },
+    clearSelectedSong: (state, action) => {
+      state.selectedSongIndex = null;
+    },
     nextSong: (state) => {
       if (
         state.selectedSongIndex !== null &&
@@ -29,7 +32,12 @@ const songsSlice = createSlice({
   },
 });
 
-export const { setSongsData, selectSong, nextSong, previousSong } =
-  songsSlice.actions;
+export const {
+  setSongsData,
+  selectSong,
+  nextSong,
+  previousSong,
+  clearSelectedSong,
+} = songsSlice.actions;
 
 export default songsSlice.reducer;
