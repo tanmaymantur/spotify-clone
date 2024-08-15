@@ -1,0 +1,8 @@
+.songs-list {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+}
+
+.songs-list::-webkit-scrollbar {
+  display: none;
+}
