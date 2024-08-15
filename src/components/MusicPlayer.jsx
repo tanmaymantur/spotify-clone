@@ -1,7 +1,6 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import { useEffect, useState, useRef } from "react";
-import Album from "../images/Album.svg";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import FastRewindIcon from "@mui/icons-material/FastRewind";
 import FastForwardIcon from "@mui/icons-material/FastForward";
@@ -143,7 +142,7 @@ export const MusicPlayer = () => {
                 component="img"
                 sx={{
                   width: { md: "275px", lg: "480px", xs: "300px" },
-                  height: { md: "260px", lg: "410px", xs: "auto" },
+                  height: { md: "260px", lg: "410px", xs: "250px" },
                 }}
                 src={`https://cms.samespace.com/assets/${selectedSong.cover}`}
                 alt="Album Cover"
