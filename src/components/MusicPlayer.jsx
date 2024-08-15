@@ -7,18 +7,25 @@ import FastForwardIcon from "@mui/icons-material/FastForward";
 import PlayCircleIcon from "@mui/icons-material/PlayCircle";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import MusicProgressBar from "../components/MusicProgressBar";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { IconButton, Slide, Slider } from "@mui/material";
 import PauseCircleIcon from "@mui/icons-material/PauseCircle";
+import { nextSong, previousSong } from "../reduxSlice/songsSlice";
 
 export const MusicPlayer = () => {
   const [currentTime, setCurrentTime] = useState(55000);
   const [duration, setDuration] = useState(70000); // Example duration in seconds
   const [isPlaying, setIsPlaying] = useState(false);
-  const selectedSong = useSelector((state) => state.selectedSong);
   const audioRef = useRef(null);
   const [volume, setVolume] = useState(0.5);
   const [showVolumeSlider, setShowVolumeSlider] = useState(false);
+  const dispatch = useDispatch();
+  const songs = useSelector((state) => state.songs.songs);
+  const selectedSongIndex = useSelector(
+    (state) => state.songs.selectedSongIndex
+  );
+  const currentSong =
+    selectedSongIndex !== null ? songs[selectedSongIndex] : null;
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -40,7 +47,7 @@ export const MusicPlayer = () => {
       audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
       audio.removeEventListener("timeupdate", handleTimeUpdate);
     };
-  }, [selectedSong]);
+  }, [currentSong]);
 
   const togglePlayPause = () => {
     if (isPlaying) {
@@ -52,12 +59,11 @@ export const MusicPlayer = () => {
   };
 
   useEffect(() => {
-    console.log("selectedSong", selectedSong);
-    if (selectedSong && audioRef.current) {
+    if (currentSong && audioRef.current) {
       audioRef.current.play();
       setIsPlaying(true);
     }
-  }, [selectedSong]);
+  }, [currentSong]);
 
   useEffect(() => {
     if (audioRef.current && typeof volume === "number" && !isNaN(volume)) {
@@ -73,6 +79,14 @@ export const MusicPlayer = () => {
     setShowVolumeSlider(!showVolumeSlider);
   };
 
+  const handleNext = () => {
+    dispatch(nextSong());
+  };
+
+  const handlePrevious = () => {
+    dispatch(previousSong());
+  };
+
   return (
     <Box
       sx={{
@@ -83,7 +97,7 @@ export const MusicPlayer = () => {
         justifyContent: "center",
       }}
     >
-      {selectedSong && (
+      {currentSong && (
         <Box
           sx={{
             display: "flex",
@@ -95,7 +109,7 @@ export const MusicPlayer = () => {
             sx={{
               display: "flex",
               flexDirection: "column",
-              gap: "20px",
+              gap: { xs: "20px", sm: "50px", md: "20px" },
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -117,7 +131,7 @@ export const MusicPlayer = () => {
                   color: "white",
                 }}
               >
-                {selectedSong.name}
+                {currentSong.name}
               </span>
               <span
                 style={{
@@ -128,7 +142,7 @@ export const MusicPlayer = () => {
                   color: "#c5c5c5",
                 }}
               >
-                {selectedSong.artist}
+                {currentSong.artist}
               </span>
             </Box>
             <Box
@@ -144,10 +158,10 @@ export const MusicPlayer = () => {
                   width: { md: "275px", lg: "480px", xs: "300px" },
                   height: { md: "260px", lg: "410px", xs: "250px" },
                 }}
-                src={`https://cms.samespace.com/assets/${selectedSong.cover}`}
+                src={`https://cms.samespace.com/assets/${currentSong.cover}`}
                 alt="Album Cover"
               />
-              <audio ref={audioRef} src={selectedSong.url} />
+              <audio ref={audioRef} src={currentSong.url} />
               <MusicProgressBar
                 duration={duration}
                 currentTime={currentTime}
@@ -185,7 +199,11 @@ export const MusicPlayer = () => {
                   gap: "10px",
                 }}
               >
-                <FastRewindIcon sx={{ color: "white", fontSize: "2.40rem" }} />
+                <IconButton onClick={handlePrevious}>
+                  <FastRewindIcon
+                    sx={{ color: "white", fontSize: "2.40rem" }}
+                  />
+                </IconButton>
                 <span style={{ display: "flex", alignItems: "center" }}>
                   <IconButton onClick={togglePlayPause}>
                     {!isPlaying ? (
@@ -199,7 +217,11 @@ export const MusicPlayer = () => {
                     )}
                   </IconButton>
                 </span>
-                <FastForwardIcon sx={{ color: "white", fontSize: "2.40rem" }} />
+                <IconButton onClick={handleNext}>
+                  <FastForwardIcon
+                    sx={{ color: "white", fontSize: "2.40rem" }}
+                  />
+                </IconButton>
               </Box>
 
               <span

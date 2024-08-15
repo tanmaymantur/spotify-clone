@@ -47,8 +47,15 @@ function darkenColor(color, percent) {
 
 function App() {
   const [value, setValue] = useState(0);
-  const color = useSelector((state) => state.selectedSong?.accent);
+  const songs = useSelector((state) => state.songs.songs);
+  const selectedSongIndex = useSelector(
+    (state) => state.songs.selectedSongIndex
+  );
+  const selectedSong =
+    selectedSongIndex !== null ? songs[selectedSongIndex] : null;
+  const color = selectedSong?.accent;
   const isXs = useMediaQuery("(max-width:600px)");
+  const isSm = useMediaQuery("(min-width:600px) and (max-width:900px)");
 
   // Create the gradient from light to dark of the same color
   const gradient = `linear-gradient(to right, ${color}, ${darkenColor(
@@ -68,11 +75,11 @@ function App() {
       }}
     >
       <Grid container spacing={2} sx={{ height: "100%" }}>
-        <Grid item md={6} xs={12}>
+        <Grid item md={6} sm={6} xs={12}>
           <div
             style={{ display: "flex", flexDirection: "row", height: "100%" }}
           >
-            {isXs ? (
+            {isXs || isSm ? (
               <SideBar />
             ) : (
               <>
@@ -83,7 +90,7 @@ function App() {
           </div>
         </Grid>
         {!isXs && (
-          <Grid item md={6} xs={12}>
+          <Grid item md={6} sm={6}>
             <MusicPlayer />
           </Grid>
         )}

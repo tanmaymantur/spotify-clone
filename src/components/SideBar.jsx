@@ -10,7 +10,14 @@ import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
 
 function SideBar({ children }) {
   const isXs = useMediaQuery("(max-width:600px)");
-  const selectedSong = useSelector((state) => state.selectedSong);
+  const isSm = useMediaQuery("(min-width:600px) and (max-width:900px)");
+
+  const songs = useSelector((state) => state.songs.songs);
+  const selectedSongIndex = useSelector(
+    (state) => state.songs.selectedSongIndex
+  );
+  const selectedSong =
+    selectedSongIndex !== null ? songs[selectedSongIndex] : null;
   const [mainPage, setMainPage] = useState(true);
 
   useEffect(() => {
@@ -44,7 +51,7 @@ function SideBar({ children }) {
         }}
       >
         <LogoSvgIcon />
-        {isXs && <ProfileIcon />}
+        {(isXs || isSm) && <ProfileIcon />}
         {isXs && !mainPage && (
           <IconButton onClick={handleGoBack}>
             <ArrowBackIosIcon sx={{ color: "white" }} />
@@ -53,11 +60,12 @@ function SideBar({ children }) {
       </Box>
       {isXs && mainPage && <SongsList />}
       {isXs && !mainPage && <MusicPlayer />}
-      {!isXs && (
+      {!isXs && !isSm && (
         <div style={{ width: "fit-content" }}>
           <ProfileIcon />
         </div>
       )}
+      {isSm && <SongsList />}
     </Box>
   );
 }

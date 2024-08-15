@@ -16,7 +16,9 @@ import { useState, useEffect } from "react";
 import TabPanel from "../components/TabPanel";
 import { setSelectedSong } from "../reduxSlice/selectedSongSlice";
 import "./SongsList.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { setSongsData } from "../reduxSlice/songsSlice";
+import { selectSong } from "../reduxSlice/songsSlice";
 import SongListItem from "./smallComponents/SongListItem";
 
 const SongsList = () => {
@@ -25,6 +27,14 @@ const SongsList = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const dispatch = useDispatch();
+  const songsList = useSelector((state) => state.songs.songs);
+  const selectedSongIndex = useSelector(
+    (state) => state.songs.selectedSongIndex
+  );
+  const selectedSong =
+    selectedSongIndex !== null ? songsList[selectedSongIndex] : null;
+  const color = selectedSong?.accent;
+  const lightenedColor = lightenColor(color, 20); // Lighten by 20%
 
   function a11yProps(index) {
     return {
@@ -43,6 +53,7 @@ const SongsList = () => {
         const data = await response.json();
         console.log("data", data.data);
         setSongs(data?.data);
+        dispatch(setSongsData(data?.data));
       } catch (error) {
         console.error("Error fetching songs:", error);
       }
@@ -65,9 +76,10 @@ const SongsList = () => {
     setValue(newValue);
   };
 
-  const selectSong = (song) => {
-    console.log(song);
-    dispatch(setSelectedSong(song));
+  const handleSelectSong = (index) => {
+    // console.log(song);
+    // dispatch(setSelectedSong(song));
+    dispatch(selectSong(index));
   };
 
   return (
@@ -124,19 +136,47 @@ const SongsList = () => {
         </Tabs>
       </div>
       <div style={{ marginTop: "10px" }}>
-        <SearchBox value={searchQuery} onChange={handleSearchChange} />
+        <SearchBox
+          lightenedColor={lightenedColor}
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
       </div>
-      <TabPanel value={value} index={0}>
-        <SongListItem songs={filteredSongs} selectSong={selectSong} />
+      <TabPanel sx={{ width: "100%" }} value={value} index={0}>
+        <SongListItem
+          songs={filteredSongs}
+          handleSelectSong={handleSelectSong}
+          lightenedColor={lightenedColor}
+        />
       </TabPanel>
-      <TabPanel value={value} index={1}>
+      <TabPanel sx={{ width: "100%" }} value={value} index={1}>
         <SongListItem
           songs={filteredSongs.filter((song) => song.top_track)}
-          selectSong={selectSong}
+          handleSelectSong={handleSelectSong}
+          lightenedColor={lightenedColor}
         />
       </TabPanel>
     </Box>
   );
+};
+
+const lightenColor = (color, percentage) => {
+  if (!color) return;
+  const amount = Math.round(2.55 * percentage);
+  const R = parseInt(color.substring(1, 3), 16) + amount;
+  const G = parseInt(color.substring(3, 5), 16) + amount;
+  const B = parseInt(color.substring(5, 7), 16) + amount;
+
+  const newColor = `#${(
+    0x1000000 +
+    (R < 255 ? (R < 1 ? 0 : R) : 255) * 0x10000 +
+    (G < 255 ? (G < 1 ? 0 : G) : 255) * 0x100 +
+    (B < 255 ? (B < 1 ? 0 : B) : 255)
+  )
+    .toString(16)
+    .slice(1)}`;
+
+  return newColor;
 };
 
 export default SongsList;

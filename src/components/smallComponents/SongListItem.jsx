@@ -8,21 +8,26 @@ import {
 } from "@mui/material";
 
 import ProfileIcon from "../../images/ProfileIcon";
+import { useSelector } from "react-redux";
 
-const SongListItem = ({ songs, selectSong }) => {
+const SongListItem = ({ songs, handleSelectSong }) => {
+  const selectedSongIndex = useSelector(
+    (state) => state.songs.selectedSongIndex
+  );
   return (
     <List
       className="songs-list"
       sx={{
-        height: { md: "400px", lg: "520px", xs: "435px" },
+        height: "calc(100vh - 230px)",
         width: { md: "340px", lg: "unset", xs: "325px" },
         overflowY: "scroll",
       }}
     >
-      {songs.map((song) => (
+      {songs.map((song, index) => (
         <ListItem key={song.id}>
           <ListItemButton
-            onClick={() => selectSong(song)}
+            selected={selectedSongIndex === index}
+            onClick={() => handleSelectSong(index)}
             sx={{ width: "432px", height: "80px", padding: "16px" }}
           >
             <ListItemAvatar>
